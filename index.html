@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🦅 𝗧𝗥𝗔𝗗𝗘𝗥 𝗞𝗛𝗔𝗡 🦅</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      padding: 16px;
+      margin: 0;
+    }
+    .header {
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+      color: #00ffc8;
+      margin-bottom: 12px;
+    }
+    .card {
+      background: #1f1f1f;
+      border-radius: 14px;
+      box-shadow: 0 0 10px rgba(0,255,200,0.1);
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .card h2 {
+      font-size: 16px;
+      margin: 4px 0;
+      color: #0ff;
+    }
+    #liveTime {
+      font-size: 20px; /* টাইমার একটু বড় করা হয়েছে */
+      font-weight: bold;
+      color: #ccc;
+      margin-top: 8px;
+    }
+    .prediction-box {
+      background: #0a0a0a;
+      border: 1px solid #00ffcc44;
+      color: #00ffcc;
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .history-container {
+      background: #1b1b1b;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Watermark Animation Style */
+    .watermark-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 50px; 
+      font-weight: 900; 
+      color: red;
+      opacity: 0;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 99;
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+      animation: floatEffect 10s infinite ease-in-out;
+    }
+
+    @keyframes floatEffect {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      10% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1.0);
+      }
+      20% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 350px;
+    }
+    th {
+      background-color: #292929;
+      color: #FFD700;
+      padding: 10px;
+      font-size: 14px;
+    }
+    td {
+      padding: 10px;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+    }
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot.red { background: red; }
+    .dot.green { background: lime; }
+    .dot.violet { background: violet; }
+    .num.red { color: #ff4c4c; font-weight: bold; }
+    .num.green { color: #00ff88; font-weight: bold; }
+    .num.violet { color: #bb66ff; font-weight: bold; }
+    .telegram-button {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #0088cc;
+      box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+      animation: blink 1s infinite;
+      z-index: 999;
+    }
+    .telegram-button img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    @keyframes blink {
+      0%, 100% { box-shadow: 0 0 10px #00f0ff; }
+      50% { box-shadow: 0 0 25px #00f0ff; }
+    }
+    @media (max-width: 500px) {
+      .header { font-size: 22px; }
+      .prediction-box { font-size: 15px; }
+      .watermark-text { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">🦅 𝗧𝗥𝗔𝗗𝗘𝗥 𝗞𝗛𝗔𝗡 🦅</div>
+
+  <div class="card">
+    <h2 id="currentPeriod">Loading Current Period...</h2>
+    <!-- Timer Display -->
+    <div id="liveTime">⏳ Timer: 00 : 00</div>
+  </div>
+
+  <div class="card prediction-box" id="predictionBox">Analyzing prediction...</div>
+
+  <div class="history-container">
+    <div class="watermark-text">🦅 𝗧𝗥𝗔𝗗𝗘𝗥 𝗞𝗛𝗔𝗡 🦅</div>
+    
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Number</th>
+            <th>Big/Small</th>
+            <th>Color</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody">
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <a href="https://t.me/Trader_Khan_Official" target="_blank" class="telegram-button" title="Join 𝗖𝗥𝗔𝗖𝗞 𝗕𝗬 𝗧𝗘𝗔𝗠 𝗗𝗔𝗥𝗞">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" />
+  </a>
+
+  <script>
+    const CURRENT_API = 'https://api.bdg88zf.com/api/webapi/GetGameIssue';
+    const HISTORY_API = 'https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json';
+
+    const REQUEST_DATA = {
+      typeId: 1,
+      language: 0,
+      random: "e7fe6c090da2495ab8290dac551ef1ed",
+      signature: "1F390E2B2D8A55D693E57FD905AE73A7",
+      timestamp: 1723726679
+    };
+
+    function getBigSmall(num) {
+      return num >= 5 ? 'Big' : 'Small';
+    }
+
+    function getColorType(num) {
+      if ([1,3,7,9].includes(num)) return 'Green';
+      if ([2,4,6,8].includes(num)) return 'Red';
+      return 'Violet';
+    }
+
+    function getPrediction(history) {
+      const sizeList = history.map(h => getBigSmall(parseInt(h.number)));
+      const bigCount = sizeList.filter(s => s === 'Big').length;
+      const smallCount = sizeList.length - bigCount;
+
+      let streakSize = sizeList[0];
+      let streakCount = 1;
+      for (let i = 1; i < sizeList.length; i++) {
+        if (sizeList[i] === streakSize) streakCount++;
+        else break;
+      }
+
+      let predicted = '';
+      const recentPattern = sizeList.slice(0, 3).join(',');
+      for (let i = 3; i < sizeList.length - 3; i++) {
+        const pattern = sizeList.slice(i, i + 3).join(',');
+        if (pattern === recentPattern) {
+          predicted = sizeList[i + 3];
+          break;
+        }
+      }
+
+      if (!predicted) {
+        if (bigCount > smallCount + 2) predicted = 'Small';
+        else if (smallCount > bigCount + 2) predicted = 'Big';
+        else predicted = sizeList[0] === 'Big' ? 'Small' : 'Big';
+      }
+
+      if (streakCount >= 3) {
+        predicted = streakSize === 'Big' ? 'Small' : 'Big';
+      }
+
+      return predicted;
+    }
+
+    function generateConfidence() {
+      return Math.floor(Math.random() * 20) + 80; 
+    }
+
+    async function loadCurrentPeriod() {
+      try {
+        const res = await fetch(CURRENT_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(REQUEST_DATA)
+        });
+        const data = await res.json();
+        return data.data?.issueNumber || "Unavailable";
+      } catch {
+        return "Unavailable";
+      }
+    }
+
+    async function loadAndPredict() {
+      const currentPeriod = await loadCurrentPeriod();
+      document.getElementById('currentPeriod').innerText = "Current Period: " + currentPeriod;
+
+      const res = await fetch(HISTORY_API + '?ts=' + Date.now());
+      const data = await res.json();
+      const list = data.data.list.slice(0, 10);
+
+      const tbody = document.getElementById('resultBody');
+      tbody.innerHTML = '';
+      list.forEach(item => {
+        const num = parseInt(item.number);
+        const size = getBigSmall(num);
+        const color = getColorType(num).toLowerCase();
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.issueNumber}</td>
+            <td class="num ${color}">${num}</td>
+            <td>${size}</td>
+            <td><span class="dot ${color}"></span></td>
+          </tr>`;
+      });
+
+      const lastPeriod = localStorage.getItem("lastShownPeriod");
+      if (currentPeriod !== lastPeriod) {
+        const prediction = getPrediction(list);
+        const confidence = generateConfidence();
+
+        document.getElementById("predictionBox").innerHTML = `
+          Prediction → ${prediction}<br>
+          <span style="font-size: 13px; color: #ccc;">(Confidence: ${confidence}%)</span>`;
+
+        localStorage.setItem("lastPrediction", prediction);
+        localStorage.setItem("lastShownPeriod", currentPeriod);
+
+        alert(
+          `Period: ${currentPeriod}\nPrediction: ${prediction}\nConfidence: ${confidence}%\n🦅 𝗧𝗥𝗔𝗗𝗘𝗥 𝗞𝗛𝗔𝗡 🦅`
+        );
+      }
+    }
+
+    // --- New Timer Logic ---
+    function startTimer() {
+      setInterval(() => {
+        const now = new Date();
+        const seconds = now.getSeconds();
+        const remaining = 60 - seconds;
+        
+        // Formating output 00:XX
+        const displaySeconds = remaining === 60 ? '00' : (remaining < 10 ? '0' + remaining : remaining);
+        
+        const timerElement = document.getElementById('liveTime');
+        
+        // শেষ ৫ সেকেন্ডে লাল হবে
+        if (remaining <= 5 && remaining !== 60) {
+           timerElement.style.color = '#ff4c4c'; // Red
+           timerElement.innerHTML = `⏳ Timer: 00 : ${displaySeconds}`;
+        } else {
+           timerElement.style.color = '#00ffc8'; // Cyan
+           timerElement.innerHTML = `⏳ Timer: 00 : ${displaySeconds}`;
+        }
+
+      }, 1000);
+    }
+
+    // Data refresh loop (Still keeps checking every 4s for result update)
+    setInterval(() => {
+      loadAndPredict();
+    }, 4000);
+
+    // Initial Calls
+    loadAndPredict();
+    startTimer();
+  </script>
+
+</body>
+</html>
